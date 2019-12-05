@@ -14,9 +14,9 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = "autocrop"
 DESCRIPTION = "Automatically crops faces from batches of pictures"
-URL = "https://github.com/leblancfg/autocrop"
-EMAIL = "leblancfg@gmail.com"
-AUTHOR = "François Leblanc"
+URL = "https://github.com/gregdvtl/autocrop"
+EMAIL = "test@test.com"
+AUTHOR = "test test"
 
 # What packages are required for this module to be executed?
 REQUIRED = ["numpy>=1.10", "opencv-python>=3, <4", "Pillow>5"]
