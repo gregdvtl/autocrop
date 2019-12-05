@@ -250,8 +250,8 @@ def output(input_filename, output_filename, image):
     """Move the input file to the output location and write over it with the
     cropped image data."""
     if input_filename != output_filename:
-        # Move the file to the output directory
-        shutil.move(input_filename, output_filename)
+        # copy the file to the output directory
+        shutil.copyfile(input_filename, output_filename)
     # Encode the image as an in-memory PNG
     img_png = cv2.imencode(".png", image)[1].tostring()
     # Read the PNG data
@@ -265,7 +265,8 @@ def reject(input_filename, reject_filename):
     """Move the input file to the reject location."""
     if input_filename != reject_filename:
         # Move the file to the reject directory
-        shutil.move(input_filename, reject_filename)
+        #shutil.move(input_filename, reject_filename)
+        print("reject")
 
 
 def main(
@@ -323,6 +324,8 @@ def main(
     for input_filename in input_files:
         basename = os.path.basename(input_filename)
         output_filename = os.path.join(output_d, basename)
+        copy_file = os.path.join(output_d, os.path.splitext(basename.lower())[0]+'.jpeg')
+        shutil.copyfile(input_filename, copy_file)
         reject_filename = os.path.join(reject_d, basename)
 
         input_img = open_file(input_filename)
@@ -343,15 +346,27 @@ def main(
         except ImageReadError:
             print("Read error:       {}".format(input_filename))
             continue
-
+        
+        #convert to grey
+        try:
+            image = cv2.cvtColor( image, cv2.COLOR_RGB2GRAY )
+        except cv2.error:
+            try:
+                image = cv2.cvtColor( image, cv2.COLOR_BGR2GRAY )
+            except cv2.error:
+                image = image
+                
         # Did the crop produce an invalid image?
         if isinstance(image, type(None)):
             reject(input_filename, reject_filename)
             print("No face detected: {}".format(reject_filename))
             reject_count += 1
         else:
-            output(input_filename, output_filename, image)
-            print("Face detected:    {}".format(output_filename))
+            copy_file = os.path.join(output_d, os.path.splitext(basename.lower())[0]+'.jpeg') 
+            #shutil.copyfile(input_filename, copy_file) 
+            #output(input_filename, output_filename, image)
+            output(input_filename, copy_file, image)
+            print("Face detected:    {}".format(copy_file))
             output_count += 1
 
     # Stop and print status
